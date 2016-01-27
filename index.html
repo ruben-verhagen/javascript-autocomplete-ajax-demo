@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JavaScript autoComplete implementation</title>
+    <meta name="description" content="A lightweight autocomplete plugin with no dependencies, written in plain JavaScript.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+    <link rel="stylesheet" href="css/auto-complete.css">
+</head>
+<body>
+    <div style="max-width:900px;padding:0 10px;margin:40px auto;text-align:center">
+        <h1>autoComplete</h1>
+    </div>
+    <form onsubmit="return false;" class="pure-form" style="border-top: 1px solid #eee;border-bottom:1px solid #eee;background:#fafafa;margin:30px 0;padding:20px 10px;text-align:center">
+        <input id="hint-name" autofocus type="text" name="q" placeholder="Enter your query" style="width:100%;max-width:600px;outline:0">
+        <input id="hint-id" autofocus type="text" name="hint-id" placeholder="ID will be shown here" readonly=true style="width:100%;max-width:600px;outline:0;margin-top:12px;">
+    </form>
+    <script src="js/jquery-1.12.0.min.js"></script>
+    <script src="js/auto-complete.js"></script>
+    <script>
+        var xhr;
+        var hint_autocomplete = new autoComplete({
+            selector: '#hint-name',
+            minChars: 2,
+            delay: 200,
+            source: function(term, response){
+                try { xhr.abort(); } catch(e){}
+                xhr = $.getJSON('ajax/feed.php', { q: term }, function(data){
+                  var suggestions = [];
+                  for (i=0;i<data.length;i++)
+                      // if (~(data[i].name).toLowerCase().indexOf(term))
+                    suggestions.push(data[i]);
+                  response(suggestions);
+                });
+            },
+            renderItem: function (item, search){
+                search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&amp;');
+                var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+                return '<div class="autocomplete-suggestion" data-name="'+item.name+'" data-id="'+item.id+'" data-val="'+search+'">'+item.name.replace(re, "<b>$1</b>")+'</div>';
+            },
+            onSelect: function(e, term, item){
+                console.log('Item "'+item.getAttribute('data-langname')+' ('+item.getAttribute('data-lang')+')" selected by '+(e.type == 'keydown' ? 'pressing enter' : 'mouse click')+'.');
+                document.getElementById('hint-name').value = item.getAttribute('data-name');
+                document.getElementById('hint-id').value = item.getAttribute('data-id');
+            }
+        });
+    </script>
+    <!-- <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js" async defer></script> -->
+</body>
+</html>
