@@ -13,8 +13,9 @@
         <h1>autoComplete</h1>
     </div>
     <form onsubmit="return false;" class="pure-form" style="border-top: 1px solid #eee;border-bottom:1px solid #eee;background:#fafafa;margin:30px 0;padding:20px 10px;text-align:center">
-        <input id="hint-name" autofocus type="text" name="q" placeholder="Enter your query" style="width:100%;max-width:600px;outline:0">
-        <input id="hint-id" autofocus type="text" name="hint-id" placeholder="ID will be shown here" readonly=true style="width:100%;max-width:600px;outline:0;margin-top:12px;">
+        <input id="hint-name" autofocus type="text" name="q" placeholder="Enter your query" style="width:100%;max-width:600px;outline:0"><br>
+        <input id="hint-id" autofocus type="text" name="hint-id" placeholder="ID will be shown here" readonly=true style="width:100%;max-width:600px;outline:0;margin-top:12px;"><br>
+		<input id="hint-type" autofocus type="text" name="hint-type" placeholder="Type will be shown here" readonly=true style="width:100%;max-width:600px;outline:0;margin-top:12px;">
     </form>
     <script src="js/jquery-1.12.0.min.js"></script>
     <script src="js/auto-complete.js"></script>
@@ -37,12 +38,13 @@
             renderItem: function (item, search){
                 search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&amp;');
                 var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                return '<div class="autocomplete-suggestion" data-name="'+item.name+'" data-id="'+item.id+'" data-val="'+search+'">'+item.name.replace(re, "<b>$1</b>")+'</div>';
+                return '<div class="autocomplete-suggestion" data-name="'+item.name+'" data-id="'+item.id+'" data-type="'+item.type+ '" data-val="'+search+'">'+item.name.replace(re, "<b>$1</b>")+'</div>';
             },
             onSelect: function(e, term, item){
                 console.log('Item "'+item.getAttribute('data-langname')+' ('+item.getAttribute('data-lang')+')" selected by '+(e.type == 'keydown' ? 'pressing enter' : 'mouse click')+'.');
                 document.getElementById('hint-name').value = item.getAttribute('data-name');
                 document.getElementById('hint-id').value = item.getAttribute('data-id');
+				document.getElementById('hint-type').value = item.getAttribute('data-type');
             }
         });
     </script>
